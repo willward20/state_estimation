@@ -79,7 +79,7 @@ if __name__ == '__main__':
         #
         input("Press Enter and Rotate Gyro 360 degrees")
         print("Recording Data...")
-        record_time = 5 # how long to record
+        record_time = 20 # how long to record
         data,t_vec = [],[]
         t0 = time.time()
         while time.time()-t0<record_time:
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         # print out reuslts
         print("Integration of {} in {}".format(gyro_labels[rot_axis],
                        gyro_labels[rot_axis].split("_")[1])+\
-              "-dir: {0:2.2f}m".format(integ1_array[-1]))
+              "-dir: {0:2.2f} degrees".format(integ1_array[-1]))
         #
         # plotting routine
         plt.style.use('ggplot')
@@ -114,8 +114,8 @@ if __name__ == '__main__':
         axs[1].set_ylabel(r'Rotation, $\theta_{}$ [$^\circ$]'.format(gyro_labels[rot_axis].\
                                                split("_")[1]),fontsize=16)
         axs[1].set_xlabel('Time [s]',fontsize=16)
-        axs[0].set_title('Gyroscope Integration over 180$^\circ$ Rotation',
+        axs[0].set_title('MPU9250 Gyroscope Integration over 360 then back to 0$^\circ$ Rotation',
                          fontsize=18)
-        fig.savefig('gyroscope_integration_180deg_rot.png',dpi=300,
+        fig.savefig('gyroscope_integration_zero_net_rot.png',dpi=300,
                     bbox_inches='tight',facecolor='#FFFFFF')
         plt.show()

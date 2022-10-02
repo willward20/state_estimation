@@ -18,12 +18,12 @@ def temperature():
 """
 while True:
     #print("temperature: ", sensor.temperature)
-    print("acceleration: ", sensor.acceleration)
-    print("magnetic: ", sensor.magnetic)
-    print("gyro: ", sensor.gyro[1])
+    #print("acceleration: ", sensor.acceleration)
+    #print("magnetic: ", sensor.magnetic)
+    print("gyro: ", sensor.gyro[2])
     #print("euler: ", sensor.euler)
     #print("quaternion: ", sensor.quaternion)
     #print("linear_acceleration: ", sensor.linear_acceleration)
     #print("gravity: ", sensor.gravity)
-    print("")
-    time.sleep(1)
+    #print("")
+    time.sleep(0.1)

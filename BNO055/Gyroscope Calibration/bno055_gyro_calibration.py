@@ -28,15 +28,17 @@ time.sleep(2) # wait for MPU to load and settle
 i2c = busio.I2C(board.SCL, board.SDA) # define board.I2C object
 sensor = adafruit_bno055.BNO055_I2C(i2c) # create sensor object
 
+PI = 3.14159265359
+
 # 
 #####################################
 # Gyro calibration (Steady)
 #####################################
 #
 def get_gyro():
-    wx = sensor.gyro[0] # read gyro data
-    wy = sensor.gyro[1]
-    wz = sensor.gyro[2]
+    wx = sensor.gyro[0] * 180 / PI # read gyro data
+    wy = sensor.gyro[1] * 180 / PI
+    wz = sensor.gyro[2] * 180 / PI
     return wx,wy,wz
 
 def gyro_cal():
@@ -95,5 +97,5 @@ if __name__ == '__main__':
     axs[0].set_title('BNO055 Gyroscope Calibration Offset Correction',fontsize=22)
     fig.savefig('bno055_gyro_calibration_output.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
-    fig.show()
+    #fig.show()
 
