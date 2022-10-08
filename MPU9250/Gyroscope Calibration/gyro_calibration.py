@@ -70,6 +70,7 @@ if __name__ == '__main__':
         gyro_labels = ['w_x','w_y','w_z'] # gyro labels for plots
         cal_size = 500 # points to use for calibration
         gyro_offsets = gyro_cal() # calculate gyro offsets
+        print("gyro_offsets: ", gyro_offsets)
         #
         ###################################
         # Record new data 
