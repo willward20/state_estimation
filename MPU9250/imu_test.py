@@ -61,7 +61,8 @@ while True:
         # Print Data
         ###############
         #
-        print("{0}: {1:3.2f} {2}".format(imu_labels[imu_ii%3],imu_val,imu_units[imu_ii]))
+        #print("{0}: {1:3.2f} {2}".format(imu_labels[imu_ii%3],imu_val,imu_units[imu_ii]))
+        print(imu_labels[imu_ii%3],": ", imu_val, " ", imu_units[imu_ii])
         
     time.sleep(1) # wait between prints
     

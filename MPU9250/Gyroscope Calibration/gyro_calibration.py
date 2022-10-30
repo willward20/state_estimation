@@ -26,6 +26,7 @@ while time.time()-t0<5:
 import numpy as np
 import csv,datetime
 import matplotlib.pyplot as plt
+import statistics
 
 time.sleep(2) # wait for MPU to load and settle
 # 
@@ -68,7 +69,7 @@ if __name__ == '__main__':
         ###################################
         #
         gyro_labels = ['w_x','w_y','w_z'] # gyro labels for plots
-        cal_size = 500 # points to use for calibration
+        cal_size = 10000 # points to use for calibration
         gyro_offsets = gyro_cal() # calculate gyro offsets
         print("gyro_offsets: ", gyro_offsets)
         #
@@ -76,12 +77,20 @@ if __name__ == '__main__':
         # Record new data 
         ###################################
         #
+        print("collecting")
         data = np.array([get_gyro() for ii in range(0,cal_size)]) # new values
+        print("size of data: ", (data.T).shape)
+        print(data.T[0])
+        print("Standard deviation of uncalibrated sample is: ",
+              "\n    w_x: ", statistics.stdev(data.T[0]), " deg/sec",
+              "\n    w_y: ", statistics.stdev(data.T[1]), " deg/sec",
+              "\n    w_z: ", statistics.stdev(data.T[2]), " deg/sec")
         #
         ###################################
         # Plot with and without offsets
         ###################################
         #
+        
         plt.style.use('ggplot')
         fig,axs = plt.subplots(2,1,figsize=(12,9))
         for ii in range(0,3):
@@ -98,3 +107,4 @@ if __name__ == '__main__':
         fig.savefig('gyro_calibration_output.png',dpi=300,
                     bbox_inches='tight',facecolor='#FCFCFC')
         fig.show()
+        
