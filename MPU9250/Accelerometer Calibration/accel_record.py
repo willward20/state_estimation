@@ -31,15 +31,33 @@ from scipy.optimize import curve_fit
 time.sleep(2) # wait for MPU to load and settle
 
 #####################################
-# Accel Calibration Test
+# Collect Accel Data using Calibration Coefficients
 #####################################
+
+accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
+accel_coeffs = [[ 0.99993400, -0.09561477],
+                [ 0.99952689 , -0.04496953], [0.97564724, 0.25164068]]
+
+
+def calibrate(data):
+    calibrated_data = []
+    for ii in range(0, len(data)):
+        calibrated_data.append([(accel_fit(data[ii][0], accel_coeffs[0][0],accel_coeffs[0][1])),
+                                (accel_fit(data[ii][1], accel_coeffs[1][0],accel_coeffs[1][1])),
+                                (accel_fit(data[ii][2], accel_coeffs[2][0],accel_coeffs[2][1]))])
+    
+    return calibrated_data
 
 def accel_fit(x_input,m_x,b):
     return (m_x*x_input)+b # fit equation for accel calibration
-#
+
 def get_accel():
+    accels = [0, 0, 0]
     ax,ay,az,_,_,_ = mpu6050_conv() # read and convert accel data
-    return ax,ay,az
+    accels[0] = ax
+    accels[1] = ay
+    accels[2] = az
+    return accels
 
 if __name__ == '__main__':
     if not start_bool:
@@ -50,31 +68,34 @@ if __name__ == '__main__':
         # Accelerometer Gravity Calibration
         ###################################
         #
-        accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
-        cal_size = 100 # number of points to use for calibration 
-        accel_coeffs = [np.array([ 0.99991705, -0.09120736]),
-                        np.array([ 0.9996431 , -0.04407273]), np.array([0.97755523, 0.23932943])]
-        print("accel_coeffs: ", accel_coeffs)
-        ###################################
-        # Record new data 
-        ###################################
-        #
+        print("Starting Up")
+        
+        data = []
+        time_elapsed = []
+        
+        input("Press Enter to Begin")
+        start_time = time.time()
         
         while True:
             try:
-                data = np.array([get_accel()]) # new values
-                calibrated_data = []
-                for ii in range(0, len(accel_labels)):
-                    calibrated_data.append(accel_fit(data[:,ii],*accel_coeffs[ii]))
-                print("x: ", calibrated_data[0], "   y: ", calibrated_data[1], "   z: ", calibrated_data[2])
-                time.sleep(0.5)
+                data.append(get_accel()) # new values
+                time_elapsed.append(time.time() - start_time)
             
-            except:
+            except KeyboardInterrupt:
                 break
+            
+        calibrated_data = calibrate(data)
         
-        input("Press Enter and Keep IMU Steady to Calibrate the Accelerometer")
-       
-        data = np.array([get_accel() for ii in range(0,cal_size)]) # new values
+        # Save data point to a file 
+        file = open('bounce_5.csv', 'a')
+        file.write('time (seconds)' + ',' + 'uncal_x' + ',' + 'uncal_y' + ',' + 'uncal_z' + ',' +
+                   'cal_x' + ',' + 'cal_y' + ',' + 'cal_z' + '\n')
+        for i in range(0, len(time_elapsed)):
+            file.write(str(time_elapsed[i]) + ',' + str(data[i][0]) + ',' + str(data[i][1]) + ',' + str(data[i][2])
+                       + ',' + str(calibrated_data[i][0]) + ',' + str(calibrated_data[i][1]) + ','
+                       + str(calibrated_data[i][2]) + '\n')
+        file.close()
+        
         
         #
         ###################################
@@ -82,21 +103,26 @@ if __name__ == '__main__':
         ###################################
         #
         
+        #print("data: ", data)
+        #print("calibrated_data: ", calibrated_data)
+        #print("time_elapsed: ", time_elapsed)
+        
         plt.style.use('ggplot')
         fig,axs = plt.subplots(2,1,figsize=(12,9))
         for ii in range(0,3):
-            axs[0].plot(data[:,ii],
+            axs[0].plot(time_elapsed, np.transpose(data)[ii],
                         label='${}$, Uncalibrated'.format(accel_labels[ii]))
-            axs[1].plot(accel_fit(data[:,ii],*accel_coeffs[ii]),
+            axs[1].plot(time_elapsed, np.transpose(calibrated_data)[ii],
                         label='${}$, Calibrated'.format(accel_labels[ii]))
         axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
         axs[0].set_ylabel('$a_{x,y,z}$ [g]',fontsize=18)
         axs[1].set_ylabel('$a_{x,y,z}$ [g]',fontsize=18)
-        axs[1].set_xlabel('Sample',fontsize=18)
+        axs[1].set_xlabel('Time (seconds)',fontsize=18)
         axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-        axs[0].set_title('Accelerometer Calibration Trial 3: z Pointed Up',fontsize=18)
-        fig.savefig('accel_calibration_trial_3_z_up.png',dpi=300,
+        axs[0].set_title('Bounce Cart on Track: Z Forward (Trial 5)',fontsize=18)
+        fig.savefig('bounce_5.png',dpi=300,
                     bbox_inches='tight',facecolor='#FCFCFC')
         fig.show()
         
+
 
