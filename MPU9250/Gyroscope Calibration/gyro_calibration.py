@@ -34,6 +34,9 @@ time.sleep(2) # wait for MPU to load and settle
 # Gyro calibration (Steady)
 #####################################
 #
+
+cal_size = 1000 # points to use for calibration
+
 def get_gyro():
     _,_,_,wx,wy,wz = mpu6050_conv() # read and convert gyro data
     return wx,wy,wz
@@ -44,6 +47,8 @@ def gyro_cal():
     [get_gyro() for ii in range(0,cal_size)] # clear buffer before calibration
     mpu_array = []
     gyro_offsets = [0.0,0.0,0.0]
+    start_time = time.time()
+    
     while True:
         try:
             wx,wy,wz = get_gyro() # get gyro vals
@@ -51,12 +56,30 @@ def gyro_cal():
             continue
 
         mpu_array.append([wx,wy,wz])
-
+        
         if np.shape(mpu_array)[0]==cal_size:
+            print('Gyro Calibration Complete. Sample Rate: ', cal_size / (time.time() - start_time))
             for qq in range(0,3):
                 gyro_offsets[qq] = np.mean(np.array(mpu_array)[:,qq]) # average
             break
-    print('Gyro Calibration Complete')
+        
+        time.sleep(0.01)
+        
+    #print("mpu_array: ", mpu_array)
+    mpu_array = np.array(mpu_array)
+    #print("mpu_array: ", mpu_array)
+
+    print("Standard deviation is: ",
+          "\n    w_x: ", statistics.stdev(mpu_array.T[0]), " deg/sec",
+          "\n    w_y: ", statistics.stdev(mpu_array.T[1]), " deg/sec",
+          "\n    w_z: ", statistics.stdev(mpu_array.T[2]), " deg/sec")
+    
+    print("Standard deviation of the mean is: ",
+          "\n    w_x: ", statistics.stdev(mpu_array.T[0]) / (cal_size**0.5), " deg/sec",
+          "\n    w_y: ", statistics.stdev(mpu_array.T[1]) / (cal_size**0.5), " deg/sec",
+          "\n    w_z: ", statistics.stdev(mpu_array.T[2]) / (cal_size**0.5), " deg/sec")
+    
+    
     return gyro_offsets
 
 if __name__ == '__main__':
@@ -69,7 +92,7 @@ if __name__ == '__main__':
         ###################################
         #
         gyro_labels = ['w_x','w_y','w_z'] # gyro labels for plots
-        cal_size = 10000 # points to use for calibration
+        
         gyro_offsets = gyro_cal() # calculate gyro offsets
         print("gyro_offsets: ", gyro_offsets)
         #
@@ -77,10 +100,11 @@ if __name__ == '__main__':
         # Record new data 
         ###################################
         #
+        """
         print("collecting")
         data = np.array([get_gyro() for ii in range(0,cal_size)]) # new values
         print("size of data: ", (data.T).shape)
-        print(data.T[0])
+        #print(data.T[0])
         print("Standard deviation of uncalibrated sample is: ",
               "\n    w_x: ", statistics.stdev(data.T[0]), " deg/sec",
               "\n    w_y: ", statistics.stdev(data.T[1]), " deg/sec",
@@ -107,4 +131,4 @@ if __name__ == '__main__':
         fig.savefig('gyro_calibration_output.png',dpi=300,
                     bbox_inches='tight',facecolor='#FCFCFC')
         fig.show()
-        
+        """
