@@ -40,13 +40,23 @@ def imu_integrator(time_array, cal_accel_array, uncal_accel_array):
     # Integrate Data Twice 
     ###################################
     
-    cal_x_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(cal_accel_array[:,0],x=time_array)), x=time_array))
-    cal_y_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(cal_accel_array[:,1],x=time_array)), x=time_array))
-    cal_z_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(cal_accel_array[:,2],x=time_array)), x=time_array))
+    cal_x_velocity = np.append(0.0, cumtrapz(cal_accel_array[:,0],x=time_array))
+    cal_y_velocity = np.append(0.0, cumtrapz(cal_accel_array[:,1],x=time_array))
+    cal_z_velocity = np.append(0.0, cumtrapz(cal_accel_array[:,2],x=time_array))
+
+    uncal_x_velocity = np.append(0.0, cumtrapz(uncal_accel_array[:,0],x=time_array))
+    uncal_y_velocity = np.append(0.0, cumtrapz(uncal_accel_array[:,1],x=time_array))
+    uncal_z_velocity = np.append(0.0, cumtrapz(uncal_accel_array[:,2],x=time_array))
     
-    uncal_x_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(uncal_accel_array[:,0],x=time_array)), x=time_array))
-    uncal_y_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(uncal_accel_array[:,1],x=time_array)), x=time_array))
-    uncal_z_displacement = np.append(0.0, cumtrapz(np.append(0.0, cumtrapz(uncal_accel_array[:,2],x=time_array)), x=time_array))
+    plot_velocity(time_array, [uncal_x_velocity, uncal_y_velocity, uncal_z_velocity], [cal_x_velocity, cal_y_velocity, cal_z_velocity])
+
+    cal_x_displacement = np.append(0.0, cumtrapz(cal_x_velocity, x=time_array))
+    cal_y_displacement = np.append(0.0, cumtrapz(cal_y_velocity, x=time_array))
+    cal_z_displacement = np.append(0.0, cumtrapz(cal_z_velocity, x=time_array))
+    
+    uncal_x_displacement = np.append(0.0, cumtrapz(uncal_x_velocity, x=time_array))
+    uncal_y_displacement = np.append(0.0, cumtrapz(uncal_y_velocity, x=time_array))
+    uncal_z_displacement = np.append(0.0, cumtrapz(uncal_z_velocity, x=time_array))
     
     # print out reuslts
     print("Calibrated Displacement of ax: ", cal_x_displacement[-1]," meters")
@@ -81,12 +91,37 @@ def plot_displacement(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$d_{x,y,z}$ [m]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Z-Forward Trial 3: Displacement Over Time (meters)',fontsize=18)
-    fig.savefig('z_track_3_dist_unfiltered.png',dpi=300,
+    axs[0].set_title('Bounce Trial 1: Displacement Over Time (meters)',fontsize=18)
+    fig.savefig('bounce_1_dist_unfiltered.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
     return
+
+def plot_velocity(time_array, uncal_accel_array, cal_accel_array):
+
+    ###################################
+    # Plot 
+    ###################################
+    plt.style.use('ggplot')
+    fig,axs = plt.subplots(2,1,figsize=(12,9))
+    for ii in range(0,3):
+        axs[0].plot(time_array, (uncal_accel_array)[ii],
+                    label='${}$, Uncalibrated'.format(accel_labels[ii]))
+        axs[1].plot(time_array, (cal_accel_array)[ii],
+                    label='${}$, Calibrated'.format(accel_labels[ii]))
+    axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
+    axs[0].set_ylabel('$v_{x,y,z}$ [m/s]',fontsize=18)
+    axs[1].set_ylabel('$v_{x,y,z}$ [m/s]',fontsize=18)
+    axs[1].set_xlabel('Time (seconds)',fontsize=18)
+    #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
+    axs[0].set_title('Bounce Trial 1: Velocity Over Time (meters/second)',fontsize=18)
+    fig.savefig('bounce_1_vel_unfiltered.png',dpi=300,
+                bbox_inches='tight',facecolor='#FCFCFC')
+    fig.show()
+
+    return
+
 
 def plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array):
 
@@ -105,8 +140,8 @@ def plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$a_{x,y,z}$ [m/s/s]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Z-Forward Trial 3: Acceleration of the Cart Minus Gravity (m/s/s)',fontsize=18)
-    fig.savefig('z_track_3_accel_no_g.png',dpi=300,
+    axs[0].set_title('Bounce Trial 1: Acceleration of the Cart Minus Gravity (m/s/s)',fontsize=18)
+    fig.savefig('bounce_1_accel_no_g.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -120,7 +155,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/z_track_3.csv")
+    CSVData = open("Aluminum_Track_Trials/bounce_1.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -145,7 +180,7 @@ if __name__ == '__main__':
     cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove gravity component due to 1 degree incline
     cal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1)))   # remove gravity component due to 1 degree incline
 
-    plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
+    #plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
     #input("press enter")
     #exit()
 
@@ -155,5 +190,5 @@ if __name__ == '__main__':
     
     cal_displacement, uncal_displacement = imu_integrator(time_array, cal_accel_array, uncal_accel_array)
 
-    plot_displacement(time_array, uncal_displacement, cal_displacement)
+    #plot_displacement(time_array, uncal_displacement, cal_displacement)
     #input("press enter")
