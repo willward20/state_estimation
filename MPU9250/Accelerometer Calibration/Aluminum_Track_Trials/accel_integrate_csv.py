@@ -180,7 +180,7 @@ if __name__ == '__main__':
     cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove gravity component due to 1 degree incline
     cal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1)))   # remove gravity component due to 1 degree incline
 
-    #plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
+    plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
     #input("press enter")
     #exit()
 
@@ -190,5 +190,5 @@ if __name__ == '__main__':
     
     cal_displacement, uncal_displacement = imu_integrator(time_array, cal_accel_array, uncal_accel_array)
 
-    #plot_displacement(time_array, uncal_displacement, cal_displacement)
+    plot_displacement(time_array, uncal_displacement, cal_displacement)
     #input("press enter")
