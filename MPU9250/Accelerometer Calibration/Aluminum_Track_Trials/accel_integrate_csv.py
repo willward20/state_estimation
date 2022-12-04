@@ -91,8 +91,8 @@ def plot_displacement(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$d_{x,y,z}$ [m]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Bounce Trial 1: Displacement Over Time (meters)',fontsize=18)
-    fig.savefig('bounce_1_dist_unfiltered.png',dpi=300,
+    axs[0].set_title('Y-Forward 1: Displacement Over Time (meters)',fontsize=18)
+    fig.savefig('y_track_1_dist.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -115,8 +115,8 @@ def plot_velocity(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$v_{x,y,z}$ [m/s]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Bounce Trial 1: Velocity Over Time (meters/second)',fontsize=18)
-    fig.savefig('bounce_1_vel_unfiltered.png',dpi=300,
+    axs[0].set_title('Y-Forward 1: Velocity Over Time (meters/second)',fontsize=18)
+    fig.savefig('y_track_1_vel.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -140,8 +140,8 @@ def plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$a_{x,y,z}$ [m/s/s]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Bounce Trial 1: Acceleration of the Cart Minus Gravity (m/s/s)',fontsize=18)
-    fig.savefig('bounce_1_accel_no_g.png',dpi=300,
+    axs[0].set_title('Y-Forward 1: Acceleration of the Cart Minus Gravity (m/s/s)',fontsize=18)
+    fig.savefig('y_track_1_accel_no_g.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/bounce_1.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Trials_Y_Forward/Trial_1/y_track_1.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -175,10 +175,14 @@ if __name__ == '__main__':
     uncal_accel_array *= 9.80665 # converts to m/s/s
     cal_accel_array *= 9.80665   # converts to m/s/s
 
-    uncal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1))) # remove gravity component due to 1 degree incline
-    uncal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1))) # remove gravity component due to 1 degree incline
-    cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove gravity component due to 1 degree incline
-    cal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1)))   # remove gravity component due to 1 degree incline
+    # these change depending on which axis is forward and up/down
+    # Z-Forward / X-Down
+    # Y-Forward / Z-Up
+    # X-Forward / Z-Up
+    uncal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1))) # remove perpendicular gravity component due to 1 degree incline
+    uncal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1))) # remove parallel gravity component due to 1 degree incline
+    cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
+    cal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1)))   # remove parallel gravity component due to 1 degree incline
 
     plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
     #input("press enter")
