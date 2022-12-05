@@ -8,6 +8,10 @@
 # MPU9250 IMU. For testing the MPU9250
 # see: imu_test.py
 #
+# You need this program in every folder 
+# where you run a script that records data
+# from the MPU9250. 
+#
 #########################################
 #
 import smbus,time

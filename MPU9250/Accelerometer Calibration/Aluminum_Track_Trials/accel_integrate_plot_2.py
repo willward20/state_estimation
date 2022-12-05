@@ -3,11 +3,14 @@
 # Author: Joshua Hrisko
 ######################################################
 #
-# This code reads data from the MPU9250/MPU9265 board
-# (MPU6050 - accel/gyro, AK8963 - mag)
-# and solves for calibration coefficients for the
-# accelerometer
-#
+# This code (1) reads the csv accelerometer data and 
+# integrates it twice to get arrays for velocity and 
+# displacement. (2) Creates three image files (one for
+# each axis x,y,z) that graphs the acceleration, 
+# velocity, and displacement on seperate plots. In these
+# plots, calibrated data is NOT compared with uncalibrated
+# data. In the forward axis graph, theoretical values are
+# plotted against experimental values. 
 #
 ######################################################
 #
@@ -30,6 +33,7 @@ from scipy.optimize import curve_fit
 from scipy.integrate import cumtrapz, trapz
 from scipy import signal
 import math
+from track_theory import track_theory
 
 time.sleep(2) # wait for MPU to load and settle
 accel_labels = ['a_x','a_y','a_z']
@@ -53,12 +57,20 @@ def plot_total(time_array, cal_accel, cal_vel, cal_dis, TITLE, FILENAME, c):
     ###################################
     # Plot 
     ###################################
+
+    # get theoretical forward axes values
+    time_theory, accel_theory, vel_theory, dis_theory = track_theory(len(time_array))
+
     plt.style.use('ggplot')
     fig,axs = plt.subplots(3,1,figsize=(12,9))
-    axs[0].plot(time_array, cal_accel, color = c)
-    axs[1].plot(time_array, cal_vel, color = c)
-    axs[2].plot(time_array, cal_dis, color = c)
-    axs[0].set_ylabel('Accel (NO g) [m/s/s]',fontsize=18)
+    axs[0].plot(time_array, cal_accel, color = c, label="Experimental")
+    axs[0].plot(time_theory, accel_theory, color = 'k', label="Theoretical")
+    axs[1].plot(time_array, cal_vel, color = c, label="Experimental")
+    axs[1].plot(time_theory, vel_theory, color = 'k', label="Theoretical")
+    axs[2].plot(time_array, cal_dis, color = c, label="Experimental")
+    axs[2].plot(time_theory, dis_theory, color = 'k', label="Theoretical")
+    axs[0].legend(fontsize=14, loc='lower right');axs[1].legend(fontsize=14, loc='lower right');axs[2].legend(fontsize=14, loc='lower right')
+    axs[0].set_ylabel('Acceleration [m/s/s]',fontsize=18)
     axs[1].set_ylabel('Velocity [m/s]',fontsize=18)
     axs[2].set_ylabel('Displacement [m]',fontsize=18)
     axs[2].set_xlabel('Time (seconds)',fontsize=18)
@@ -78,7 +90,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_Z_Forward/Trial_3/z_track_3.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Trials_Z_Forward/Trial_3/recorded_data_z_track_3.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -100,9 +112,9 @@ if __name__ == '__main__':
     cal_y_accel *= 9.80665   # converts to m/s/s
     cal_z_accel *= 9.80665   # converts to m/s/s
 
-    # These change depending on which axis is forward and which axis is up/down
+    # Remove gravity component
     cal_x_accel += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
-    cal_z_accel -= (9.80665 * math.sin(math.radians(1)))   # remove parallel gravity component due to 1 degree incline
+    # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
     
     ###################################
     # integration over time
@@ -113,4 +125,4 @@ if __name__ == '__main__':
 
     #plot_total(time_array, cal_x_accel, cal_x_vel, cal_x_dis, 'Z Forward Trial 2: X Axis', 'z_track_2_x.png', c='r')
     #plot_total(time_array, cal_y_accel, cal_y_vel, cal_y_dis, 'Z Forward Trial 2: Y Axis', 'z_track_2_y.png', c='b')
-    plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Z Forward Trial 3: Z Axis', 'z_track_3_z.png', c='m')
+    plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Z Forward Trial 3: Z Axis (Experimental vs. Theoretical)', 'z_track_3_z.png', c='m')

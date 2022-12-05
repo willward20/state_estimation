@@ -8,6 +8,7 @@
 # and solves for calibration coefficients for the
 # accelerometer
 #
+# I never used or modified this program
 #
 ######################################################
 #

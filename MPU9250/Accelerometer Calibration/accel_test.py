@@ -1,13 +1,24 @@
 ######################################################
 # Copyright (c) 2021 Maker Portal LLC
 # Author: Joshua Hrisko
+# Modified by Will Ward
 ######################################################
 #
-# This code reads data from the MPU9250/MPU9265 board
-# (MPU6050 - accel/gyro, AK8963 - mag)
-# and solves for calibration coefficients for the
-# accelerometer
+# I'm fairly confident that I used this script to create 
+# the graphs in the Calibration Trials folder. I must 
+# have used a differnt script to record calibration constants,
+# and then I used thos constants to calibrated accel data
+# when the device is stationary for three orientations:
+# x down, y up, and z up. I don't know exactly what constants
+# were used, but I can assume that the same constants were
+# at least used for each of the three images in one Trial. 
+# Whether the same constants were used for each of the 
+# three trials is unknown. 
 #
+# It would not be hard to repeat this test in the future,
+# if I needed to. I think the point is to show that the 
+# accuracy of the calibration is not significantly impacted
+# by the ortientation of the cube. 
 #
 ######################################################
 #
@@ -52,8 +63,9 @@ if __name__ == '__main__':
         #
         accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
         cal_size = 100 # number of points to use for calibration 
+        # Sample calibration values collected on 10/24
         accel_coeffs = [np.array([ 0.99991705, -0.09120736]),
-                        np.array([ 0.9996431 , -0.04407273]), np.array([0.97755523, 0.23932943])]
+                        np.array([ 0.9996431 , -0.04407273]), np.array([0.97755523, 0.23932943])] 
         print("accel_coeffs: ", accel_coeffs)
         ###################################
         # Record new data 

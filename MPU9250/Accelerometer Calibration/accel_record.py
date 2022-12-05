@@ -1,13 +1,16 @@
 ######################################################
 # Copyright (c) 2021 Maker Portal LLC
 # Author: Joshua Hrisko
+# Modified by Will Ward
 ######################################################
 #
-# This code reads data from the MPU9250/MPU9265 board
-# (MPU6050 - accel/gyro, AK8963 - mag)
-# and solves for calibration coefficients for the
-# accelerometer
-#
+# This code was used to record data for all Aluminum 
+# Track Trials. The RPi, IMU in its calibration cube, 
+# and the Pi's external power bank were attached by 
+# tape and rubber bands to a PASCO cart. In each trail, 
+# the cart is released from rest from the top of a 
+# frictionless track that is inclined at an angle of 1 
+# degree. Accelerometer data is recorded in units of g. 
 #
 ######################################################
 #
@@ -36,7 +39,7 @@ time.sleep(2) # wait for MPU to load and settle
 
 accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
 accel_coeffs = [[ 0.99993400, -0.09561477],
-                [ 0.99952689 , -0.04496953], [0.97564724, 0.25164068]]
+                [ 0.99952689 , -0.04496953], [0.97564724, 0.25164068]] # measured on day of testing
 
 
 def calibrate(data):

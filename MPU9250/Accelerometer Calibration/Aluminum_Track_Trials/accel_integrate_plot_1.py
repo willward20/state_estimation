@@ -1,13 +1,16 @@
 ######################################################
 # Copyright (c) 2021 Maker Portal LLC
 # Author: Joshua Hrisko
+# Modified by Will Ward
 ######################################################
 #
-# This code reads data from the MPU9250/MPU9265 board
-# (MPU6050 - accel/gyro, AK8963 - mag)
-# and solves for calibration coefficients for the
-# accelerometer
-#
+# This code (1) reads the csv accelerometer data and 
+# integrates it twice to get arrays for velocity and 
+# displacement. (2) Plots the acceleration, velocity,
+# and displacement in three different png files. The 
+# image files show two plots for calibrated and 
+# uncalibrated data. On each plot, all three axes are
+# plotted together 
 #
 ######################################################
 #
@@ -91,8 +94,8 @@ def plot_displacement(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$d_{x,y,z}$ [m]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Y-Forward 1: Displacement Over Time (meters)',fontsize=18)
-    fig.savefig('y_track_1_dist.png',dpi=300,
+    axs[0].set_title('Z-Forward 3: Displacement Over Time (meters)',fontsize=18)
+    fig.savefig('z_track_3_dist.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -115,15 +118,15 @@ def plot_velocity(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$v_{x,y,z}$ [m/s]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Y-Forward 1: Velocity Over Time (meters/second)',fontsize=18)
-    fig.savefig('y_track_1_vel.png',dpi=300,
+    axs[0].set_title('Z-Forward 3: Velocity Over Time (meters/second)',fontsize=18)
+    fig.savefig('z_track_3_vel.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
     return
 
 
-def plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array):
+def plot_accel(time_array, uncal_accel_array, cal_accel_array):
 
     ###################################
     # Plot 
@@ -140,8 +143,8 @@ def plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$a_{x,y,z}$ [m/s/s]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Y-Forward 1: Acceleration of the Cart Minus Gravity (m/s/s)',fontsize=18)
-    fig.savefig('y_track_1_accel_no_g.png',dpi=300,
+    axs[0].set_title('Z-Forward 3: Acceleration of the Cart [Minus Gravity in Perp Axis] (m/s/s)',fontsize=18)
+    fig.savefig('z_track_3_accel.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -155,7 +158,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_Y_Forward/Trial_1/y_track_1.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Trials_Z_Forward/Trial_3/z_track_3.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -180,11 +183,11 @@ if __name__ == '__main__':
     # Y-Forward / Z-Up
     # X-Forward / Z-Up
     uncal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1))) # remove perpendicular gravity component due to 1 degree incline
-    uncal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1))) # remove parallel gravity component due to 1 degree incline
+    # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
     cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
-    cal_accel_array[:, 2] += (9.80665 * math.sin(math.radians(1)))   # remove parallel gravity component due to 1 degree incline
+    # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
 
-    plot_accel_no_g(time_array, uncal_accel_array, cal_accel_array)
+    plot_accel(time_array, uncal_accel_array, cal_accel_array)
     #input("press enter")
     #exit()
 
