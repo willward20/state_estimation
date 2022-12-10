@@ -90,7 +90,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_Z_Forward/Trial_3/recorded_data_z_track_3.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Trials_X_Forward/Trial_3/recorded_data_x_track_3.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     cal_z_accel *= 9.80665   # converts to m/s/s
 
     # Remove gravity component
-    cal_x_accel += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
+    #cal_x_accel += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
     # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
     
     ###################################
@@ -123,6 +123,6 @@ if __name__ == '__main__':
     cal_y_vel, cal_y_dis = imu_integrator(time_array, cal_y_accel)
     cal_z_vel, cal_z_dis = imu_integrator(time_array, cal_z_accel)
 
-    #plot_total(time_array, cal_x_accel, cal_x_vel, cal_x_dis, 'Z Forward Trial 2: X Axis', 'z_track_2_x.png', c='r')
-    #plot_total(time_array, cal_y_accel, cal_y_vel, cal_y_dis, 'Z Forward Trial 2: Y Axis', 'z_track_2_y.png', c='b')
-    plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Z Forward Trial 3: Z Axis (Experimental vs. Theoretical)', 'z_track_3_z.png', c='m')
+    plot_total(time_array, cal_x_accel, cal_x_vel, cal_x_dis, 'X Forward Trial 3: X Axis', 'x_track_3_x.png', c='r')
+    #plot_total(time_array, cal_y_accel, cal_y_vel, cal_y_dis, 'Y Forward Trial 3: Y Axis', 'y_track_3_y.png', c='b')
+    #plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Z Forward Trial 3: Z Axis (Experimental vs. Theoretical)', 'z_track_3_z.png', c='m')

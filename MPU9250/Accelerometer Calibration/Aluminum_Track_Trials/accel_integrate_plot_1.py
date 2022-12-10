@@ -51,7 +51,7 @@ def imu_integrator(time_array, cal_accel_array, uncal_accel_array):
     uncal_y_velocity = np.append(0.0, cumtrapz(uncal_accel_array[:,1],x=time_array))
     uncal_z_velocity = np.append(0.0, cumtrapz(uncal_accel_array[:,2],x=time_array))
     
-    plot_velocity(time_array, [uncal_x_velocity, uncal_y_velocity, uncal_z_velocity], [cal_x_velocity, cal_y_velocity, cal_z_velocity])
+    #plot_velocity(time_array, [uncal_x_velocity, uncal_y_velocity, uncal_z_velocity], [cal_x_velocity, cal_y_velocity, cal_z_velocity])
 
     cal_x_displacement = np.append(0.0, cumtrapz(cal_x_velocity, x=time_array))
     cal_y_displacement = np.append(0.0, cumtrapz(cal_y_velocity, x=time_array))
@@ -94,8 +94,8 @@ def plot_displacement(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$d_{x,y,z}$ [m]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Z-Forward 3: Displacement Over Time (meters)',fontsize=18)
-    fig.savefig('z_track_3_dist.png',dpi=300,
+    axs[0].set_title('Y-Forward 1: Displacement Over Time (meters)',fontsize=18)
+    fig.savefig('y_track_1_dist.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_Z_Forward/Trial_3/z_track_3.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Trials_Y_Forward/Trial_1/recorded_data_y_track_1.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -182,12 +182,12 @@ if __name__ == '__main__':
     # Z-Forward / X-Down
     # Y-Forward / Z-Up
     # X-Forward / Z-Up
-    uncal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1))) # remove perpendicular gravity component due to 1 degree incline
+    uncal_accel_array[:, 2] -= (9.80665 * math.cos(math.radians(1))) # remove perpendicular gravity component due to 1 degree incline
     # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
-    cal_accel_array[:, 0] += (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
+    cal_accel_array[:, 2] -= (9.80665 * math.cos(math.radians(1)))   # remove perpendicular gravity component due to 1 degree incline
     # DON'T remove gravity component from the axis parallel to the track because it is unopposed when in motion. 
 
-    plot_accel(time_array, uncal_accel_array, cal_accel_array)
+    #plot_accel(time_array, uncal_accel_array, cal_accel_array)
     #input("press enter")
     #exit()
 
