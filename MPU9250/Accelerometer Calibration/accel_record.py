@@ -38,8 +38,9 @@ time.sleep(2) # wait for MPU to load and settle
 #####################################
 
 accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
-accel_coeffs = [[ 0.99993400, -0.09561477],
-                [ 0.99952689 , -0.04496953], [0.97564724, 0.25164068]] # measured on day of testing
+accel_coeffs = [[ 1.0000, -0.0919], [ 0.99957, -0.04379], [0.97779, 0.2407]] # 12/11 lab workbench average rounded for SDOM of three trials
+#accel_coeffs = [[ 0.99993400, -0.09561477],
+                #[ 0.99952689 , -0.04496953], [0.97564724, 0.25164068]] # measured on day of testing (aluminum track)
 
 
 def calibrate(data):
@@ -79,7 +80,7 @@ if __name__ == '__main__':
         input("Press Enter to Begin")
         start_time = time.time()
         
-        while True:
+        while (time.time() - start_time) < 30:
             try:
                 data.append(get_accel()) # new values
                 time_elapsed.append(time.time() - start_time)
@@ -90,7 +91,7 @@ if __name__ == '__main__':
         calibrated_data = calibrate(data)
         
         # Save data point to a file 
-        file = open('bounce_5.csv', 'a')
+        file = open('accel_drift_still_x_up.csv', 'a')
         file.write('time (seconds)' + ',' + 'uncal_x' + ',' + 'uncal_y' + ',' + 'uncal_z' + ',' +
                    'cal_x' + ',' + 'cal_y' + ',' + 'cal_z' + '\n')
         for i in range(0, len(time_elapsed)):
@@ -122,8 +123,8 @@ if __name__ == '__main__':
         axs[1].set_ylabel('$a_{x,y,z}$ [g]',fontsize=18)
         axs[1].set_xlabel('Time (seconds)',fontsize=18)
         axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-        axs[0].set_title('Bounce Cart on Track: Z Forward (Trial 5)',fontsize=18)
-        fig.savefig('bounce_5.png',dpi=300,
+        axs[0].set_title('Accelerometer Stationary on Workbench X Up',fontsize=18)
+        fig.savefig('accel_drift_still_x_up.png',dpi=300,
                     bbox_inches='tight',facecolor='#FCFCFC')
         fig.show()
         
