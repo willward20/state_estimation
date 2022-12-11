@@ -64,11 +64,11 @@ def plot_total(time_array, cal_accel, cal_vel, cal_dis, TITLE, FILENAME, c):
     plt.style.use('ggplot')
     fig,axs = plt.subplots(3,1,figsize=(12,9))
     axs[0].plot(time_array, cal_accel, color = c, label="Experimental")
-    axs[0].plot(time_theory, accel_theory, color = 'k', label="Theoretical")
+    #axs[0].plot(time_theory, accel_theory, color = 'k', label="Theoretical")
     axs[1].plot(time_array, cal_vel, color = c, label="Experimental")
-    axs[1].plot(time_theory, vel_theory, color = 'k', label="Theoretical")
+    #axs[1].plot(time_theory, vel_theory, color = 'k', label="Theoretical")
     axs[2].plot(time_array, cal_dis, color = c, label="Experimental")
-    axs[2].plot(time_theory, dis_theory, color = 'k', label="Theoretical")
+    #axs[2].plot(time_theory, dis_theory, color = 'k', label="Theoretical")
     axs[0].legend(fontsize=14, loc='lower right');axs[1].legend(fontsize=14, loc='lower right');axs[2].legend(fontsize=14, loc='lower right')
     axs[0].set_ylabel('Acceleration [m/s/s]',fontsize=18)
     axs[1].set_ylabel('Velocity [m/s]',fontsize=18)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_X_Forward/Trial_3/recorded_data_x_track_3.csv")
+    CSVData = open("Aluminum_Track_Trials/Track_Bounce_Trials/bounce_1.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
@@ -123,6 +123,6 @@ if __name__ == '__main__':
     cal_y_vel, cal_y_dis = imu_integrator(time_array, cal_y_accel)
     cal_z_vel, cal_z_dis = imu_integrator(time_array, cal_z_accel)
 
-    plot_total(time_array, cal_x_accel, cal_x_vel, cal_x_dis, 'X Forward Trial 3: X Axis', 'x_track_3_x.png', c='r')
+    #plot_total(time_array, cal_x_accel, cal_x_vel, cal_x_dis, 'X Forward Trial 3: X Axis', 'x_track_3_x.png', c='r')
     #plot_total(time_array, cal_y_accel, cal_y_vel, cal_y_dis, 'Y Forward Trial 3: Y Axis', 'y_track_3_y.png', c='b')
-    #plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Z Forward Trial 3: Z Axis (Experimental vs. Theoretical)', 'z_track_3_z.png', c='m')
+    plot_total(time_array, cal_z_accel, cal_z_vel, cal_z_dis, 'Bounce Z Forward Trial 1: Z Axis', 'bounce_1_z.png', c='m') # (Experimental vs. Theoretical)
