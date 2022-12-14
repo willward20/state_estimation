@@ -94,8 +94,8 @@ def plot_displacement(time_array, uncal_accel_array, cal_accel_array):
     axs[1].set_ylabel('$d_{x,y,z}$ [m]',fontsize=18)
     axs[1].set_xlabel('Time (seconds)',fontsize=18)
     #axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-    axs[0].set_title('Y-Forward 1: Displacement Over Time (meters)',fontsize=18)
-    fig.savefig('y_track_1_dist.png',dpi=300,
+    axs[0].set_title('Drift Test IMU at Rest: Z Up [Minus Gravity]',fontsize=18)
+    fig.savefig('accel_drift_still_z_up_dist.png',dpi=300,
                 bbox_inches='tight',facecolor='#FCFCFC')
     fig.show()
 
@@ -158,19 +158,12 @@ if __name__ == '__main__':
     # Read data from .csv file 
     ###################################
 
-    CSVData = open("Aluminum_Track_Trials/Track_Trials_Y_Forward/Trial_1/recorded_data_y_track_1.csv")
+    CSVData = open("Drift_Tests/Z_Up_Data/accel_drift_still_z_up.csv")
     csv_data = np.loadtxt(CSVData, skiprows = 1, delimiter=",", dtype=float)
 
     time_array = csv_data[:, 0]
     uncal_accel_array = csv_data[:, [1, 2, 3]]
     cal_accel_array = csv_data[:, [4, 5, 6]]
-
-    ###################################
-    # Graph .csv data to double check 
-    ###################################
-
-    #plot_csv(time_array, uncal_accel_array, cal_accel_array)
-    #exit()
 
     ###################################
     # Convert g to m/s/s
@@ -197,5 +190,5 @@ if __name__ == '__main__':
     
     cal_displacement, uncal_displacement = imu_integrator(time_array, cal_accel_array, uncal_accel_array)
 
-    plot_displacement(time_array, uncal_displacement, cal_displacement)
+    #plot_displacement(time_array, uncal_displacement, cal_displacement)
     #input("press enter")

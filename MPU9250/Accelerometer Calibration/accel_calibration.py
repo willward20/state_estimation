@@ -38,6 +38,7 @@ def accel_fit(x_input,m_x,b):
     #print("x_input: ", x_input)
     #print("m_x: ", m_x)
     #print("b: ", b)
+    # takes accelerometer data as input and returns correct acceleration value
     return (m_x*x_input)+b # fit equation for accel calibration
 #
 def get_accel():
