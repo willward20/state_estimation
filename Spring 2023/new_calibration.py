@@ -39,14 +39,6 @@ import math
 time.sleep(2) # wait for MPU to load and settle
 
 
-def accel_fit(x_input,m_x,b):
-    #print("x_input: ", x_input)
-    #print("m_x: ", m_x)
-    #print("b: ", b)
-    # takes accelerometer data as input and returns correct acceleration value
-    return (m_x*x_input)+b # fit equation for accel calibration
-
-
 def get_accel():
     ax,ay,az,_,_,_ = mpu6050_conv() # read and convert accel data
     return ax,ay,az
@@ -77,11 +69,11 @@ def accel_cal(num_angles, cal_size, axis):
         for m in range(0, cal_size):
             #[mpu6050_conv() for ii in range(0,cal_size)] # clear buffer between readings
             if axis == 'ax':
-                collect_data, _, _ = 0, 1, 2 # get_accel()
+                collect_data, _, _ = get_accel()
             elif axis == 'ay':
-                _, collect_data, _ = 0, 1, 2 # get_accel()
+                _, collect_data, _ = get_accel()
             elif axis == 'az':
-                _, _, collect_data = 0, 1, 2 # get_accel()
+                _, _, collect_data = get_accel()
             else:
                 print("You did not specify correct axis")
                 exit()
@@ -125,6 +117,12 @@ def calc_grav(angles):
 
     return grav_array
 
+def accel_fit(x_input,m_x,b):
+    #print("x_input: ", x_input)
+    #print("m_x: ", m_x)
+    #print("b: ", b)
+    # takes accelerometer data as input and returns correct acceleration value
+    return (m_x*x_input)+b # fit equation for accel calibration
 
 def calc_coef(theory, measured):
     # Use three calibrations (+1g, -1g, 0g) for linear fit
@@ -133,13 +131,31 @@ def calc_coef(theory, measured):
     print(coeffs)
     return coeffs
 
+def graph_data(theory, means, SDOMs, coeffs, TITLE, FILENAME, c):
+    # you should also plot accelerometer reading versus angle
+    trend_x = np.arange(-1,2)
+    trend_y = accel_fit(trend_x, coeffs[0], coeffs[1])
+
+    fig = plt.figure()
+    axs = fig.add_subplot(1,1,1)
+
+    plt.errorbar(means, theory, xerr=SDOMs, fmt="o", color=c)
+    plt.plot(trend_x, trend_y, color='k')
+    axs.set_ylabel('Actual Acceleration [g]')
+    axs.set_xlabel('Accelerometer Acceleration [g]')
+    #axs.set_ylim([-2,2])
+    axs.set_title(TITLE)
+    fig.savefig(FILENAME)
+
+    return
+
 
 ####################################################################################################################
 # MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN ###### MAIN #
 ####################################################################################################################
 
 if __name__ == '__main__':
-    start_bool = True # REMOVE WHEN USING THE IMU!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #start_bool = True # REMOVE WHEN USING THE IMU!!!!!!!!!!!!!!!!!!!!!!!!!!
     if not start_bool:
         print("IMU not Started - Check Wiring and I2C")
     else:
@@ -148,7 +164,7 @@ if __name__ == '__main__':
         # Retrieve data for multiple angles
         ###################################
 
-        number_angles = 3 # how many angles to collect data from
+        number_angles = 2 # how many angles to collect data from
         cal_size = 3 # number of points to use for calibration 
         input("Ready to collect for X? Press Enter.")
         x_angles, x_means, x_stdevs, x_SDOMs = accel_cal(number_angles, cal_size, "ax") # collect mean, stdev, and SDOM for each angle
@@ -177,36 +193,9 @@ if __name__ == '__main__':
         # Graph theory vs data with trend line and error bars
         #####################################################
 
+        graph_data(x_grav_theory, x_means, x_SDOMs, x_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (x-axis)", "grav_plot_x.png", 'r')
+        graph_data(y_grav_theory, y_means, y_SDOMs, y_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (y-axis)", "grav_plot_y.png", 'r')
+        graph_data(z_grav_theory, z_means, z_SDOMs, z_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (z-axis)", "grav_plot_z.png", 'r')
 
         exit()
 
-        
-
-        print("accel_coeffs: ", accel_coeffs)
-
-        ###################################
-        # Record new data 
-        ###################################
-        
-        data = np.array([get_accel() for ii in range(0,cal_size)]) # new values
-        
-        ###################################
-        # Plot with and without offsets
-        ###################################
-        accel_labels = ['a_x','a_y','a_z'] # gyro labels for plots
-        plt.style.use('ggplot')
-        fig,axs = plt.subplots(2,1,figsize=(12,9))
-        for ii in range(0,3):
-            axs[0].plot(data[:,ii],
-                        label='${}$, Uncalibrated'.format(accel_labels[ii]))
-            axs[1].plot(accel_fit(data[:,ii],*accel_coeffs[ii]),
-                        label='${}$, Calibrated'.format(accel_labels[ii]))
-        axs[0].legend(fontsize=14);axs[1].legend(fontsize=14)
-        axs[0].set_ylabel('$a_{x,y,z}$ [g]',fontsize=18)
-        axs[1].set_ylabel('$a_{x,y,z}$ [g]',fontsize=18)
-        axs[1].set_xlabel('Sample',fontsize=18)
-        axs[0].set_ylim([-2,2]);axs[1].set_ylim([-2,2])
-        axs[0].set_title('Accelerometer Calibration Calibration Correction',fontsize=18)
-        fig.savefig('accel_calibration_output.png',dpi=300,
-                    bbox_inches='tight',facecolor='#FCFCFC')
-        fig.show()
