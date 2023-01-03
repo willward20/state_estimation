@@ -44,7 +44,7 @@ def get_accel():
     return ax,ay,az
 
     
-def accel_cal(num_angles, cal_size, axis):
+def accel_cal(cal_size, axis):
 
     ##############################
     # Collect data for each angle
@@ -54,10 +54,14 @@ def accel_cal(num_angles, cal_size, axis):
     mean_data = []
     stdev_data = []
     SDOM_data = []
+    number_angles = 0
 
-    for n in range(0, num_angles):
+    #for n in range(0, num_angles):
+    while True:
 
-        angle = float(input("-"*8+" Type the angle in degrees. "))
+        angle = float(input("-"*8+" Type the angle in degrees. Enter 1000 to end the program."))
+        if angle == 1000:
+            break
         # FIGURE TIHS OUT LATER. YOU WILL NEED TO FACTOR THIS INTO GRAVITY CALCULATIONS
         #angle_uncertainty = float(input("-"*8+" Type the uncertainty in the angle measurement. "))
         
@@ -94,7 +98,9 @@ def accel_cal(num_angles, cal_size, axis):
         angles.append(angle) 
         mean_data.append(angle_mean)
         stdev_data.append(angle_stdev) 
-        SDOM_data.append(angle_SDOM) 
+        SDOM_data.append(angle_SDOM)
+        
+        number_angles += 1
 
     ###########################
     # Save analyzed data to CSV
@@ -102,7 +108,7 @@ def accel_cal(num_angles, cal_size, axis):
 
     file = open('calibration_1_'+axis+'.csv', 'a') # name csv after calibration trial and axis
     file.write('angle' + ',' + 'mean' + ',' + 'stdev' + ',' + 'SDOM' + '\n') # label each column
-    for i in range(0, num_angles): # for every angle
+    for i in range(0, number_angles): # for every angle
         file.write(str(angles[i]) + ',' + str(mean_data[i]) + ',' + str(stdev_data[i]) + ',' + str(SDOM_data[i]) + '\n')
     file.close()
 
@@ -114,6 +120,9 @@ def calc_grav(angles):
 
     for ii in range(0, len(angles)):
         grav_array.append(math.cos(math.radians(angles[ii]))) # in units of g
+        
+    print("angles: ", angles)
+    print("grav_array: ", grav_array)
 
     return grav_array
 
@@ -133,7 +142,7 @@ def calc_coef(theory, measured):
 
 def graph_data(theory, means, SDOMs, coeffs, TITLE, FILENAME, c):
     # you should also plot accelerometer reading versus angle
-    trend_x = np.arange(-1,2)
+    trend_x = np.arange(-2,2)
     trend_y = accel_fit(trend_x, coeffs[0], coeffs[1])
 
     fig = plt.figure()
@@ -164,38 +173,38 @@ if __name__ == '__main__':
         # Retrieve data for multiple angles
         ###################################
 
-        number_angles = 2 # how many angles to collect data from
-        cal_size = 3 # number of points to use for calibration 
+        #number_angles = 13 # how many angles to collect data from
+        cal_size = 1000 # number of points to use for calibration 
         input("Ready to collect for X? Press Enter.")
-        x_angles, x_means, x_stdevs, x_SDOMs = accel_cal(number_angles, cal_size, "ax") # collect mean, stdev, and SDOM for each angle
-        input("Ready to collect for Y? Press Enter.")
-        y_angles, y_means, y_stdevs, y_SDOMs = accel_cal(number_angles, cal_size, "ay") # collect mean, stdev, and SDOM for each angle
-        input("Ready to collect for Z? Press Enter.")
-        z_angles, z_means, z_stdevs, z_SDOMs = accel_cal(number_angles, cal_size, "az") # collect mean, stdev, and SDOM for each angle
+        x_angles, x_means, x_stdevs, x_SDOMs = accel_cal(cal_size, "ax") # collect mean, stdev, and SDOM for each angle
+        #input("Ready to collect for Y? Press Enter.")
+        #y_angles, y_means, y_stdevs, y_SDOMs = accel_cal(cal_size, "ay") # collect mean, stdev, and SDOM for each angle
+        #input("Ready to collect for Z? Press Enter.")
+        #z_angles, z_means, z_stdevs, z_SDOMs = accel_cal(cal_size, "az") # collect mean, stdev, and SDOM for each angle
 
         #############################################
         # Calculate Theoretical Gravity for each axis
         #############################################
 
         x_grav_theory = calc_grav(x_angles)
-        y_grav_theory = calc_grav(y_angles)
-        z_grav_theory = calc_grav(z_angles)
+        #y_grav_theory = calc_grav(y_angles)
+        #z_grav_theory = calc_grav(z_angles)
 
         ###################################
         # Calculate Linear Fit Coefficients
         ###################################
 
         x_coefficients = calc_coef(x_grav_theory, x_means)
-        y_coefficients = calc_coef(y_grav_theory, y_means)
-        z_coefficients = calc_coef(z_grav_theory, z_means)
+        #y_coefficients = calc_coef(y_grav_theory, y_means)
+        #z_coefficients = calc_coef(z_grav_theory, z_means)
 
         #####################################################
         # Graph theory vs data with trend line and error bars
         #####################################################
 
-        graph_data(x_grav_theory, x_means, x_SDOMs, x_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (x-axis)", "grav_plot_x.png", 'r')
-        graph_data(y_grav_theory, y_means, y_SDOMs, y_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (y-axis)", "grav_plot_y.png", 'r')
-        graph_data(z_grav_theory, z_means, z_SDOMs, z_coefficients, "Theoretical Gravity vs Acceleroemter Measrued Gravity (z-axis)", "grav_plot_z.png", 'r')
+        graph_data(x_grav_theory, x_means, x_SDOMs, x_coefficients, "Theoretical Gravity vs Accelerometer Measured Gravity (x-axis)", "grav_plot_x.png", 'r')
+        #graph_data(y_grav_theory, y_means, y_SDOMs, y_coefficients, "Theoretical Gravity vs Accelerometer Measured Gravity (y-axis)", "grav_plot_y.png", 'r')
+        #graph_data(z_grav_theory, z_means, z_SDOMs, z_coefficients, "Theoretical Gravity vs Accelerometer Measured Gravity (z-axis)", "grav_plot_z.png", 'r')
 
         exit()
 
