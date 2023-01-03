@@ -57,7 +57,7 @@ def accel_cal(num_angles, cal_size, axis):
 
     for n in range(0, num_angles):
 
-        angle = float(input("-"*8+" Type the angle. "))
+        angle = float(input("-"*8+" Type the angle in degrees. "))
         # FIGURE TIHS OUT LATER. YOU WILL NEED TO FACTOR THIS INTO GRAVITY CALCULATIONS
         #angle_uncertainty = float(input("-"*8+" Type the uncertainty in the angle measurement. "))
         
@@ -155,7 +155,7 @@ def graph_data(theory, means, SDOMs, coeffs, TITLE, FILENAME, c):
 ####################################################################################################################
 
 if __name__ == '__main__':
-    #start_bool = True # REMOVE WHEN USING THE IMU!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #start_bool = True # COMMENT OUT WHEN USING THE IMU
     if not start_bool:
         print("IMU not Started - Check Wiring and I2C")
     else:
