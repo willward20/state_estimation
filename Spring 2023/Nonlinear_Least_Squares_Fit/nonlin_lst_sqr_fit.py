@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # Read data from calibrate 19 pts
     ###################################
 
-    CSV = open("calibrate_x_19pts.csv")
+    CSV = open("measure_x_19pts.csv")
     csv_data = np.loadtxt(CSV, skiprows = 1, delimiter=",", dtype=float)
     angle_deg = csv_data[:, 0]
     mean_accel = csv_data[:, 1]
@@ -86,4 +86,4 @@ if __name__ == '__main__':
     #print("covariance: ", pcov)
 
     # Graph the data, trend fit, and ideal curve
-    graph_data(angle_deg, mean_accel, popt, "Accelerometer Inclined at Rest: x Axis (Fit with TWO Params)", "_.png")
+    #graph_data(angle_deg, mean_accel, popt, "Accelerometer Inclined at Rest: x Axis (Fit with TWO Params)", "_.png")

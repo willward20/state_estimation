@@ -93,10 +93,10 @@ def graph_error(angles, error4, error2, TITLE, FILENAME):
 if __name__ == '__main__':
     
     ###################################
-    # Read data from calibrate 19 pts
+    # Read data from measure 19 pts
     ###################################
 
-    CSV = open("calibrate_x_19pts.csv")
+    CSV = open("measure_x_19pts.csv")
     csv_data = np.loadtxt(CSV, skiprows = 1, delimiter=",", dtype=float)
     angle_deg = csv_data[:, 0]
     mean_accel = csv_data[:, 1]
