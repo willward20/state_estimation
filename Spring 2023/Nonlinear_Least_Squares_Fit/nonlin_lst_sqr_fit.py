@@ -32,10 +32,6 @@ def cos_four_params(angles, A, B, C, D):
 def cos_two_params(angles, A, D):
     return A * np.cos(angles*math.pi / 180) + D
 
-def linear_fit(x_input,m_x,b):
-    # takes accelerometer data as input and returns correct acceleration value
-    return (m_x*x_input)+b # fit equation for accel calibration
-
 def graph_data(angles, means, coeffs, TITLE, FILENAME):
 
     #curve_fit = cos_four_params(angles, coeffs[0], coeffs[1], coeffs[2], coeffs[3]) # fit curve w/ four parameters
